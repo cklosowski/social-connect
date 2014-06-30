@@ -617,6 +617,20 @@ abstract class BaseFacebook
       ));
   }
 
+  public function getUserGroups($params=array()) {
+    $this->establishCSRFTokenState();
+
+    return $this->getUrl(
+      'graph',
+      $params['fb_id'] . '/groups',
+      array_merge(
+        array(
+          'client_id' => $this->getAppId(),
+          'sdk' => 'php-sdk-'.self::VERSION
+        )
+      ));
+  }
+
   /**
    * Get a Logout URL suitable for use with redirects.
    *
@@ -973,7 +987,7 @@ abstract class BaseFacebook
 
     curl_setopt_array($ch, $opts);
     $result = curl_exec($ch);
-    
+
     $errno = curl_errno($ch);
     // CURLE_SSL_CACERT || CURLE_SSL_CACERT_BADFILE
     if ($errno == 60 || $errno == 77) {

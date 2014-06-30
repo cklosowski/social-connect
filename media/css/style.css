@@ -1,7 +1,5 @@
 div.social_connect_ui img {
   border: 0px;
-  height: 32px;
-  width: 32px;
 }
 
 .social_connect_wordpress_form {
@@ -13,12 +11,10 @@ div.social_connect_ui img {
 }
 
 img#social_connect_comment_via_provider  {
-  width: 16px;
-  height: 16px;
 }
 
 img.social_connect_already_connected_logo {
-  float:left; 
+  float:left;
   padding-right: 10px;
 }
 

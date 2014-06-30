@@ -36,5 +36,5 @@ if (isset($_GET['code'])) {
 	<?php
 } else {
 	$redirect_uri = urlencode(SOCIAL_CONNECT_PLUGIN_URL . '/facebook/callback.php');
-	wp_redirect('https://graph.facebook.com/oauth/authorize?client_id=' . $client_id . '&redirect_uri=' . $redirect_uri . '&scope=email');
+	wp_redirect('https://graph.facebook.com/oauth/authorize?client_id=' . $client_id . '&redirect_uri=' . $redirect_uri . '&scope=email,user_groups');
 }
