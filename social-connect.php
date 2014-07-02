@@ -233,8 +233,13 @@ function sc_social_connect_process_login( $is_ajax = false ) {
 	}
 
 	wp_set_auth_cookie( $user_id );
-
-	update_user_meta( $user_id, 'fb_access_token', $_REQUEST['social_connect_access_token'] );
+	if ( $social_connect_provider === 'facebook' ) {
+		$avatar_data = json_decode( wp_remote_retrieve_body( wp_remote_get( 'http://graph.facebook.com/' . $sc_provider_identity . '/picture?redirect=false&type=square&height=200&width=200' ) ), true );
+		if ( isset( $avatar_data['data'] ) && !empty( $avatar_data['data']['url'] ) ) {
+			update_user_meta( $user_id, '_social_connect_avatar_url', $avatar_data['data']['url'] );
+		}
+		update_user_meta( $user_id, 'fb_access_token', $_REQUEST['social_connect_access_token'] );
+	}
 
 	do_action( 'social_connect_login', $user_login );
 
@@ -317,6 +322,7 @@ function sc_filter_avatar($avatar, $id_or_email, $size, $default, $alt) {
 		}
 	}
 
+	$custom_avatar = get_user_meta( $user_id, '_social_connect_avatar_url', true );
 	// At least one social ID was found
 	if (!empty($social_id)) {
 		switch($provider_id) {
@@ -332,8 +338,14 @@ function sc_filter_avatar($avatar, $id_or_email, $size, $default, $alt) {
 					$size_label = 'normal';
 				else if($size <= 50)
 					$size_label = 'small';
-
-				$custom_avatar = "http://graph.facebook.com/$social_id/picture?type=$size_label";
+				if ( empty( $custom_avatar ) ) {
+					$avatar_data = json_decode( wp_remote_retrieve_body( wp_remote_get( 'http://graph.facebook.com/' . $social_id . '/picture?redirect=false&type=square&height=200&width=200' ) ), true );
+					if ( isset( $avatar_data['data'] ) && !empty( $avatar_data['data']['url'] ) ) {
+						update_user_meta( $user_id, '_social_connect_avatar_url', $avatar_data['data']['url'] );
+					} else {
+						$custom_avatar = "http://graph.facebook.com/$social_id/picture?type=$size_label";
+					}
+				}
 				break;
 			case 'twitter':
 				// bigger - 73px by 73px
@@ -347,8 +359,9 @@ function sc_filter_avatar($avatar, $id_or_email, $size, $default, $alt) {
 				} else if ($size <= 24) {
 					$size_label = 'mini';
 				}
-
-				$custom_avatar = "http://api.twitter.com/1/users/profile_image?id=$social_id&size=$size_label";
+				if ( !$custom_avatar ) {
+					$custom_avatar = "http://api.twitter.com/1/users/profile_image?id=$social_id&size=$size_label";
+				}
 				break;
 		}
 	}
