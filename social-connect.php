@@ -96,7 +96,7 @@ function sc_parse_request($wp) {
 				break;
 		}
 
-		wp_die();
+		exit();
 	}
 }
 add_action('parse_request', 'sc_parse_request');
