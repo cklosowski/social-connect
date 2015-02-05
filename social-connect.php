@@ -322,8 +322,8 @@ function sc_filter_avatar($avatar, $id_or_email, $size, $default, $alt) {
 		}
 	}
 
-	$custom_avatar = get_user_meta( $user_id, '_social_connect_avatar_url', true );
-	// At least one social ID was found
+	$custom_avatar = get_transient( 'rah_user_avatarurl-' . $user_id );
+
 	if (!empty($social_id)) {
 		switch($provider_id) {
 			case 'facebook':
@@ -341,7 +341,8 @@ function sc_filter_avatar($avatar, $id_or_email, $size, $default, $alt) {
 				if ( empty( $custom_avatar ) ) {
 					$avatar_data = json_decode( wp_remote_retrieve_body( wp_remote_get( 'http://graph.facebook.com/' . $social_id . '/picture?redirect=false&type=square&height=200&width=200' ) ), true );
 					if ( isset( $avatar_data['data'] ) && !empty( $avatar_data['data']['url'] ) ) {
-						update_user_meta( $user_id, '_social_connect_avatar_url', $avatar_data['data']['url'] );
+						delete_transient( 'rah_user_avatarurl-' . $user_id );
+						set_transient( 'rah_user_avatarurl-' . $user_id, $avatar_data['data']['url'], DAY_IN_SECONDS );
 						$custom_avatar = $avatar_data['data']['url'];
 					} else {
 						$custom_avatar = "http://graph.facebook.com/$social_id/picture?type=$size_label";
