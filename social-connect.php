@@ -234,10 +234,7 @@ function sc_social_connect_process_login( $is_ajax = false ) {
 
 	wp_set_auth_cookie( $user_id );
 	if ( $social_connect_provider === 'facebook' ) {
-		$avatar_data = json_decode( wp_remote_retrieve_body( wp_remote_get( 'http://graph.facebook.com/' . $sc_provider_identity . '/picture?redirect=false&type=square&height=200&width=200' ) ), true );
-		if ( isset( $avatar_data['data'] ) && !empty( $avatar_data['data']['url'] ) ) {
-			update_user_meta( $user_id, '_social_connect_avatar_url', $avatar_data['data']['url'] );
-		}
+		wp_update_user( array( 'ID' => $user_id, 'user_email' => $sc_email ) );
 		update_user_meta( $user_id, 'fb_access_token', $_REQUEST['social_connect_access_token'] );
 	}
 
