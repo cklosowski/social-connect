@@ -235,7 +235,7 @@ function sc_social_connect_process_login( $is_ajax = false ) {
 	wp_set_auth_cookie( $user_id );
 	if ( $social_connect_provider === 'facebook' ) {
 		$exists = email_exists( $sc_email );
-		if ( ! $email_exists ) {
+		if ( ! $exists ) {
 			wp_update_user( array( 'ID' => $user_id, 'user_email' => $sc_email ) );
 		}
 		update_user_meta( $user_id, 'fb_access_token', $_REQUEST['social_connect_access_token'] );
